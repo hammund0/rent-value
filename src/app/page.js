@@ -8,11 +8,14 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
   const [postcode, setPostcode] = useState('')
   const [bedrooms, setBedrooms] = useState('1')
+  const [bedroomsRes, setBedroomsRes] = useState('')
   const [res, setRes] = useState(null)
 
   const handleSearch = async () => {
     const res = await fetch(`/api/search?p=${encodeURIComponent(postcode)}&b=${encodeURIComponent(bedrooms)}`)
     const { json } = await res.json()
+
+    setBedroomsRes(bedrooms)
 
     if (json.status !== 'error') {
       setRes(json)
@@ -111,7 +114,7 @@ export default function Home() {
         </div>
 
         {res && <div style={{padding: '2rem'}} className={styles.description}>
-          <p>Bedrooms: {bedrooms}</p>
+          <p>Bedrooms: {bedroomsRes}</p>
           <p>Average price(pw): &pound;{res?.data?.long_let?.average}</p>
           <p>Average price(pcm): &pound;{((res?.data?.long_let?.average*52)/12).toFixed(2)}</p>
         </div>}
