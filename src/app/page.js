@@ -12,8 +12,11 @@ export default function Home() {
 
   const handleSearch = async () => {
     const res = await fetch(`/api/search?p=${encodeURIComponent(postcode)}&b=${encodeURIComponent(bedrooms)}`)
-    const json = await res.json()
-    setRes(json)
+    const { json } = await res.json()
+
+    if (json.status !== 'error') {
+      setRes(json)
+    }
   }
 
   return (
@@ -109,8 +112,8 @@ export default function Home() {
 
         {res && <div style={{padding: '2rem'}} className={styles.description}>
           <p>Bedrooms: {bedrooms}</p>
-          <p>Average price(pw): &pound;{res?.json?.data?.long_let?.average}</p>
-          <p>Average price(pcm): &pound;{((res?.json?.data?.long_let?.average*52)/12).toFixed(2)}</p>
+          <p>Average price(pw): &pound;{res?.data?.long_let?.average}</p>
+          <p>Average price(pcm): &pound;{((res?.data?.long_let?.average*52)/12).toFixed(2)}</p>
         </div>}
       </div>
 
