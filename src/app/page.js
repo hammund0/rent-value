@@ -42,7 +42,7 @@ export default function Home() {
             <br/><br/>
             Search with a postcode or area name.
             <br/><br/>
-            It's completely free to use and we do not collect any data from you.
+            Completely free to use and we do not collect any data from you.
             <br />
           </p>
         </div>
