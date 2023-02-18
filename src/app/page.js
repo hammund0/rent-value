@@ -1,90 +1,123 @@
-import Image from 'next/image'
+'use client'
 import { Inter } from '@next/font/google'
 import styles from './page.module.css'
+import { useState } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const [postcode, setPostcode] = useState('')
+  const [bedrooms, setBedrooms] = useState('1')
+  const [res, setRes] = useState(null)
+
+  const handleSearch = async () => {
+    const res = await fetch(`/api/search?p=${encodeURIComponent(postcode)}&b=${encodeURIComponent(bedrooms)}`)
+    const json = await res.json()
+    setRes(json)
+  }
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
         <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
+          UK rental value price trends.
         </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </div>
+
+      <div 
+        className={styles.center}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem'
+        }}
+      >
+        <div 
+          className={styles.description}
+          style={{
+            maxWidth: '550px'
+          }}>
+          <p>
+            Search for average rental property prices and price trends.
+            <br/><br/>
+            Search with a postcode or area name.
+            <br/><br/>
+            It's completely free to use and we do not collect any data from you.
+            <br />
+          </p>
+        </div>
+
+        <div style={{position: 'relative', zIndex: 50}}>
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault()
+              handleSearch()
+            }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              position: 'relative',
+              gap: '1rem'
+            }}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+            <select
+              style={{
+                padding: '1rem'
+              }} 
+              name="b"
+              onChange={(e) => setBedrooms(e.target.value)}
+            >
+              <option value="1">1 bedroom</option>
+              <option value="2">2 bedrooms</option>
+              <option value="3">3 bedrooms</option>
+              <option value="4">4 bedrooms</option>
+              <option value="5">5 bedrooms</option>
+            </select>
+
+            <div style={{position: 'relative'}}>
+              <input
+                style={{
+                  padding: '1rem',
+                  paddingTop: '2rem',
+                  width: '100%'
+                }}
+                type="text"
+                name="p"
+                defaultValue={postcode}
+                onChange={(e) => setPostcode(e.target.value)}
+              />
+              <label className={styles.code} style={{
+                position: 'absolute',
+                fontSize: '0.75rem',
+                padding: '0.5rem',
+                left: '0'
+
+              }} htmlFor='p'>
+                Search postcode
+              </label>
+            </div>
+            <input
+              type="submit"
+              value='Search'
+              style={{
+                padding: '1rem'
+              }}
             />
-          </a>
+          </form>
         </div>
+
+        {res && <div style={{padding: '2rem'}} className={styles.description}>
+          <p>Bedrooms: {bedrooms}</p>
+          <p>Average price(pw): &pound;{res?.json?.data?.long_let?.average}</p>
+          <p>Average price(pcm): &pound;{((res?.json?.data?.long_let?.average*52)/12).toFixed(2)}</p>
+        </div>}
       </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div style={{justifyContent: 'center'}} className={styles.description}>
+        <p>
+          Made by Laurence Hammond.
+        </p>
       </div>
     </main>
   )
